@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from celery import current_app, states
-from celery.task.control import broadcast, rate_limit, revoke
+from celery.control import broadcast, rate_limit, revoke
 from celery.utils.text import abbrtask
 from django.contrib import admin
 from django.contrib.admin import helpers
