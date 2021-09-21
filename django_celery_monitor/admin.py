@@ -1,26 +1,21 @@
 """Result Task Admin interface."""
 from __future__ import absolute_import, unicode_literals
 
-from __future__ import absolute_import, unicode_literals
-
+from celery import current_app, states
+from celery.task.control import broadcast, rate_limit, revoke
+from celery.utils.text import abbrtask
 from django.contrib import admin
 from django.contrib.admin import helpers
 from django.contrib.admin.views import main as main_views
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
-from celery import current_app
-from celery import states
-from celery.task.control import broadcast, revoke, rate_limit
-from celery.utils.text import abbrtask
-
-from .models import TaskState, WorkerState
 from .humanize import naturaldate
+from .models import TaskState, WorkerState
 from .utils import action, display_field, fixedwidth, make_aware
-
 
 TASK_STATE_COLORS = {states.SUCCESS: 'green',
                      states.FAILURE: 'red',
@@ -211,7 +206,7 @@ class TaskMonitor(ModelMonitor):
             'app_label': app_label,
         }
 
-        return render_to_response(
+        return render(
             self.rate_limit_confirmation_template, context,
             context_instance=RequestContext(request),
         )
