@@ -9,7 +9,7 @@ __all__ = ['CeleryMonitorConfig']
 
 class CeleryMonitorConfig(AppConfig):
     """Default configuration for the django_celery_monitor app."""
-
+    default_auto_field = 'django.db.models.AutoField'
     name = 'django_celery_monitor'
     label = 'celery_monitor'
     verbose_name = _('Celery Monitor')
