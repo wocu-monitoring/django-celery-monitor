@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from celery import current_app, states
-from celery.task.control import broadcast, rate_limit, revoke
+from celery.app.control import Control
 from celery.utils.text import abbrtask
 from django.contrib import admin
 from django.contrib.admin import helpers
@@ -11,7 +11,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.utils.encoding import force_text
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .humanize import naturaldate
 from .models import TaskState, WorkerState
@@ -168,22 +168,27 @@ class TaskMonitor(ModelMonitor):
 
     @action(_('Revoke selected tasks'))
     def revoke_tasks(self, request, queryset):
+        control = Control(app=current_app)
         with current_app.default_connection() as connection:
             for state in queryset:
-                revoke(state.task_id, connection=connection)
+                control.revoke(state.task_id, connection=connection)
 
     @action(_('Terminate selected tasks'))
     def terminate_tasks(self, request, queryset):
+        control = Control(app=current_app)
         with current_app.default_connection() as connection:
             for state in queryset:
-                revoke(state.task_id, connection=connection, terminate=True)
+                control.revoke(state.task_id,
+                               connection=connection,
+                               terminate=True)
 
     @action(_('Kill selected tasks'))
     def kill_tasks(self, request, queryset):
+        control = Control(app=current_app)
         with current_app.default_connection() as connection:
             for state in queryset:
-                revoke(state.task_id, connection=connection,
-                       terminate=True, signal='KILL')
+                control.revoke(state.task_id, connection=connection,
+                               terminate=True, signal='KILL')
 
     @action(_('Rate limit selected tasks'))
     def rate_limit_tasks(self, request, queryset):
@@ -193,8 +198,9 @@ class TaskMonitor(ModelMonitor):
         if request.POST.get('post'):
             rate = request.POST['rate_limit']
             with current_app.default_connection() as connection:
+                control = Control(app=current_app)
                 for task_name in tasks:
-                    rate_limit(task_name, rate, connection=connection)
+                    control.rate_limit(task_name, rate, connection=connection)
             return None
 
         context = {
@@ -233,20 +239,22 @@ class WorkerMonitor(ModelMonitor):
     actions = ['shutdown_nodes',
                'enable_events',
                'disable_events']
+    control = Control(app=current_app)
 
     @action(_('Shutdown selected worker nodes'))
     def shutdown_nodes(self, request, queryset):
-        broadcast('shutdown', destination=[n.hostname for n in queryset])
+        self.control.broadcast('shutdown',
+                               destination=[n.hostname for n in queryset])
 
     @action(_('Enable event mode for selected nodes.'))
     def enable_events(self, request, queryset):
-        broadcast('enable_events',
-                  destination=[n.hostname for n in queryset])
+        self.control.broadcast('enable_events',
+                               destination=[n.hostname for n in queryset])
 
     @action(_('Disable event mode for selected nodes.'))
     def disable_events(self, request, queryset):
-        broadcast('disable_events',
-                  destination=[n.hostname for n in queryset])
+        self.control.broadcast('disable_events',
+                               destination=[n.hostname for n in queryset])
 
     def get_actions(self, request):
         actions = super(WorkerMonitor, self).get_actions(request)
