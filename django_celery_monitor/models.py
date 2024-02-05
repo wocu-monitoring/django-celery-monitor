@@ -70,6 +70,9 @@ class TaskState(models.Model):
     name = models.CharField(
         _('name'), max_length=200, null=True, db_index=True,
     )
+    periodic_task_name = models.CharField(
+        _('periodic_task_name'), max_length=200, null=True, db_index=True,
+    )
     #: A :class:`~datetime.datetime` describing when the task was received.
     tstamp = models.DateTimeField(_('event received at'), db_index=True)
     #: The positional :ref:`task arguments <celery:calling-basics>`.
