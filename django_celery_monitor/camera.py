@@ -1,6 +1,7 @@
 """The Celery events camera."""
 from __future__ import absolute_import, unicode_literals
 
+import ast
 from datetime import timedelta
 
 from celery import states
@@ -85,8 +86,13 @@ class Camera(Polaroid):
                 (task.worker.hostname, task.worker),
             )
 
+        periodic_task_name = ast.literal_eval(task.kwargs).get(
+            'periodic_task_name', task.name
+        )
+
         defaults = {
             'name': task.name,
+            'periodic_task_name': periodic_task_name,
             'args': task.args,
             'kwargs': task.kwargs,
             'eta': correct_awareness(maybe_iso8601(task.eta)),
