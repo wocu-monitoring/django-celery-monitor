@@ -86,9 +86,12 @@ class Camera(Polaroid):
                 (task.worker.hostname, task.worker),
             )
 
-        periodic_task_name = ast.literal_eval(task.kwargs).get(
-            'periodic_task_name', task.name
-        )
+        if type(task.kwargs) is str:
+            periodic_task_name = ast.literal_eval(task.kwargs).get(
+                'periodic_task_name', task.name
+            )
+        else:
+            periodic_task_name = task.kwargs.get('periodic_task_name', task.name)
 
         defaults = {
             'name': task.name,
