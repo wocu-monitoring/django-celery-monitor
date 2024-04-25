@@ -85,12 +85,6 @@ class Camera(Polaroid):
             worker = self.handle_worker(
                 (task.worker.hostname, task.worker),
             )
-        if type(task.kwargs) is str:
-            periodic_task_name = ast.literal_eval(task.kwargs).get(
-                'periodic_task_name', task.name
-            )
-        else:
-            periodic_task_name = task.kwargs.get('periodic_task_name', task.name)
 
         if type(task.kwargs) is str:
             try:
