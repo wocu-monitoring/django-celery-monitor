@@ -3,28 +3,28 @@ from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
-from django.utils.translation import ungettext, gettext as _
+from django.utils.translation import gettext as _
 from django.utils.timezone import now
 
 
 def pluralize_year(n):
     """Return a string with the number of yeargs ago."""
-    return ungettext(_('{num} year ago'), _('{num} years ago'), n)
+    return _('{num} year ago'), _('{num} years ago'), n
 
 
 def pluralize_month(n):
     """Return a string with the number of months ago."""
-    return ungettext(_('{num} month ago'), _('{num} months ago'), n)
+    return _('{num} month ago'), _('{num} months ago'), n
 
 
 def pluralize_week(n):
     """Return a string with the number of weeks ago."""
-    return ungettext(_('{num} week ago'), _('{num} weeks ago'), n)
+    return _('{num} week ago'), _('{num} weeks ago'), n
 
 
 def pluralize_day(n):
     """Return a string with the number of days ago."""
-    return ungettext(_('{num} day ago'), _('{num} days ago'), n)
+    return _('{num} day ago'), _('{num} days ago'), n
 
 
 OLDER_CHUNKS = (
