@@ -8,23 +8,23 @@ from django.utils.timezone import now
 
 
 def pluralize_year(n):
-    """Return a string with the number of yeargs ago."""
-    return _('{num} year ago'), _('{num} years ago'), n
+    """Return a string with the number of years ago."""
+    return _(f'{n} year ago') if n == 1 else _(f'{n} years ago')
 
 
 def pluralize_month(n):
     """Return a string with the number of months ago."""
-    return _('{num} month ago'), _('{num} months ago'), n
+    return _(f'{n} month ago') if n == 1 else _(f'{n} months ago')
 
 
 def pluralize_week(n):
     """Return a string with the number of weeks ago."""
-    return _('{num} week ago'), _('{num} weeks ago'), n
+    return _(f'{n} week ago') if n == 1 else _(f'{n} weeks ago')
 
 
 def pluralize_day(n):
     """Return a string with the number of days ago."""
-    return _('{num} day ago'), _('{num} days ago'), n
+    return _(f'{n} day ago') if n == 1 else _(f'{n} days ago')
 
 
 OLDER_CHUNKS = (
@@ -57,21 +57,13 @@ def naturaldate(date, include_seconds=False):
     if days == 0:
         if hours == 0:
             if minutes > 0:
-                return ungettext(
-                    _('{minutes} minute ago'),
-                    _('{minutes} minutes ago'), minutes
-                ).format(minutes=minutes)
+                return _(f'{minutes} minute ago') if minutes == 1 else _(f'{minutes} minutes ago')
             else:
                 if include_seconds and seconds:
-                    return ungettext(
-                        _('{seconds} second ago'),
-                        _('{seconds} seconds ago'), seconds
-                    ).format(seconds=seconds)
+                    return _(f'{seconds} second ago') if seconds == 1 else _(f'{seconds} seconds ago')
                 return _('just now')
         else:
-            return ungettext(
-                _('{hours} hour ago'), _('{hours} hours ago'), hours
-            ).format(hours=hours)
+            return _(f'{hours} hour ago') if hours == 1 else _(f'{hours} hours ago')
 
     if delta_midnight.days == 0:
         return _('yesterday at {time}').format(time=date.strftime('%H:%M'))
