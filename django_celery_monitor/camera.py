@@ -86,25 +86,11 @@ class Camera(Polaroid):
                 (task.worker.hostname, task.worker),
             )
 
-        if type(task.kwargs) is str:
-            try:
-                periodic_task_name = ast.literal_eval(
-                    # literal_eval fails when string contains characters like
-                    # EOL. Some Import Tasks like mysql_import use this
-                    # characters so remove then to avoid errors
-                    task.kwargs.replace("\n", "").replace("\r", "")
-                ).get('periodic_task_name', task.name)
-            except Exception:
-                periodic_task_name = task.name
-
-        else:
-            periodic_task_name = task.kwargs.get('periodic_task_name', task.name)
-
         defaults = {
             'name': task.name,
-            'periodic_task_name': periodic_task_name,
             'args': task.args,
-            'kwargs': task.kwargs,
+            # Set kwargs to None to avoid error described in https://gitlab.com/a3sec/devel/wocu/soporte-a3sec/-/issues/687
+            'kwargs': None,
             'eta': correct_awareness(maybe_iso8601(task.eta)),
             'expires': correct_awareness(maybe_iso8601(task.expires)),
             'state': task.state,
