@@ -87,9 +87,16 @@ class Camera(Polaroid):
             )
 
         if type(task.kwargs) is str:
-            periodic_task_name = ast.literal_eval(task.kwargs).get(
-                'periodic_task_name', task.name
-            )
+            try:
+                periodic_task_name = ast.literal_eval(
+                    # literal_eval fails when string contains characters like
+                    # EOL. Some Import Tasks like mysql_import use this
+                    # characters so remove then to avoid errors
+                    task.kwargs.replace("\n", "").replace("\r", "")
+                ).get('periodic_task_name', task.name)
+            except Exception:
+                periodic_task_name = task.name
+
         else:
             periodic_task_name = task.kwargs.get('periodic_task_name', task.name)
 
